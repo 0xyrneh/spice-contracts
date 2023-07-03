@@ -97,7 +97,7 @@ describe("Para4626", function () {
           symbol,
           constants.contracts.ParaPool,
           constants.tokens.pWETH,
-          constants.contracts.ParaClaim,
+          constants.contracts.ParaClaim
         )
       ).to.be.revertedWith("Initializable: contract is already initialized");
     });
@@ -194,9 +194,7 @@ describe("Para4626", function () {
         await weth.connect(whale).approve(vault.address, assets);
         await vault.connect(whale).deposit(assets, whale.address);
 
-        expect(await vault.maxWithdraw(whale.address)).to.be.eq(
-          await vault.convertToAssets(await vault.balanceOf(whale.address))
-        );
+        expect(await vault.maxWithdraw(whale.address)).to.be.eq(0);
       });
     });
 
@@ -456,9 +454,15 @@ describe("Para4626", function () {
         const beforeAssetBalance = await weth.balanceOf(bob.address);
         const beforeShareBalance = await vault.balanceOf(whale.address);
 
-        const tx = await vault.connect(whale).withdraw(assets, bob.address, whale.address);
+        const tx = await vault
+          .connect(whale)
+          .withdraw(assets, bob.address, whale.address);
         const res = await tx.wait();
-        const event = res.events.find(evt => evt.topics[0] === '0x454cda23c2c757a228c6569d9f3db9c4cb8936936f8f73ae2fcf7ad1d40c2c1b');
+        const event = res.events.find(
+          (evt) =>
+            evt.topics[0] ===
+            "0x454cda23c2c757a228c6569d9f3db9c4cb8936936f8f73ae2fcf7ad1d40c2c1b"
+        );
         const [agreementId, , , ,] = ethers.utils.defaultAbiCoder.decode(
           ["uint256", "uint8", "uint8", "uint256[]", "uint48"],
           event.data
@@ -477,7 +481,7 @@ describe("Para4626", function () {
         expect(afterAssetBalance).to.be.eq(beforeAssetBalance.add(assets));
         expect(beforeShareBalance).to.be.closeTo(
           afterShareBalance.add(shares),
-          ethers.utils.parseEther("0.0001"),
+          ethers.utils.parseEther("0.0001")
         );
       });
     });
@@ -540,9 +544,15 @@ describe("Para4626", function () {
         const beforeAssetBalance = await weth.balanceOf(bob.address);
         const beforeShareBalance = await vault.balanceOf(whale.address);
 
-        const tx = await vault.connect(whale).redeem(shares, bob.address, whale.address);
+        const tx = await vault
+          .connect(whale)
+          .redeem(shares, bob.address, whale.address);
         const res = await tx.wait();
-        const event = res.events.find(evt => evt.topics[0] === '0x454cda23c2c757a228c6569d9f3db9c4cb8936936f8f73ae2fcf7ad1d40c2c1b');
+        const event = res.events.find(
+          (evt) =>
+            evt.topics[0] ===
+            "0x454cda23c2c757a228c6569d9f3db9c4cb8936936f8f73ae2fcf7ad1d40c2c1b"
+        );
         const [agreementId, , , ,] = ethers.utils.defaultAbiCoder.decode(
           ["uint256", "uint8", "uint8", "uint256[]", "uint48"],
           event.data
@@ -560,7 +570,7 @@ describe("Para4626", function () {
 
         expect(afterAssetBalance).to.be.closeTo(
           beforeAssetBalance.add(assets),
-          ethers.utils.parseEther("0.0001"),
+          ethers.utils.parseEther("0.0001")
         );
         expect(beforeShareBalance).to.be.eq(afterShareBalance.add(shares));
       });
