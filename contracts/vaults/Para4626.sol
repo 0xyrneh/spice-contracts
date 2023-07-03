@@ -182,9 +182,8 @@ contract Para4626 is
     }
 
     /// @notice See {IERC4626-maxWithdraw}
-    function maxWithdraw(address owner) external view returns (uint256) {
-        return
-            _convertToAssets(balanceOf(owner), MathUpgradeable.Rounding.Down);
+    function maxWithdraw(address) external pure returns (uint256) {
+        return 0;
     }
 
     /// @notice See {IERC4626-maxRedeem}
@@ -417,7 +416,11 @@ contract Para4626 is
         pWETH.safeApprove(poolAddress, assets);
 
         // withdraw weth from the pool and send it to `receiver`
-        uint256 withdrawn = IPoolCore(poolAddress).withdraw(WETH, assets, address(this));
+        uint256 withdrawn = IPoolCore(poolAddress).withdraw(
+            WETH,
+            assets,
+            address(this)
+        );
 
         if (assets != withdrawn) {
             revert LessWithdrawn();

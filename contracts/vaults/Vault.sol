@@ -14,7 +14,6 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "prb-math/contracts/PRBMathUD60x18.sol";
 
 import "../interfaces/IVault.sol";
 import "../interfaces/INoteAdapter.sol";
@@ -379,7 +378,7 @@ contract Vault is
 
     /// @notice See {IERC4626-maxWithdraw}
     function maxWithdraw(address owner) external view returns (uint256) {
-        return previewRedeem(balanceOf(owner));
+        return MathUpgradeable.min(previewRedeem(balanceOf(owner)), _asset.balanceOf(address(this)));
     }
 
     /// @notice See {IERC4626-maxRedeem}
