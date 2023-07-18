@@ -112,6 +112,8 @@ abstract contract VaultStorageV2 {
 
     uint256 public lastTotalAssets;
     uint256 public lastTotalShares;
+
+    uint256 public liquidationFee;
 }
 
 /**
@@ -240,6 +242,10 @@ contract Vault is
     /// @param noteToken Note token contract
     /// @param loanId Loan ID
     event LoanLiquidated(address indexed noteToken, uint256 loanId);
+
+    /// @notice Emitted the liquidation fee is updated
+    /// @param liquidationFee Liquidation fee
+    event LiquidationFeeUpdated(uint256 indexed liquidationFee);
 
     /*************/
     /* Modifiers */
@@ -978,6 +984,19 @@ contract Vault is
         emit TotalAssets(totalAssets_);
     }
 
+    /// @notice Set total assets
+    ///
+    /// Emits a {TotalAssets} event.
+    ///
+    /// @param liquidationFee_ New liquidation fee
+    function setLiquidationFee(
+        uint256 liquidationFee_
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        liquidationFee = liquidationFee_;
+
+        emit LiquidationFeeUpdated(liquidationFee_);
+    }
+
     // @notice Set note adapter contract
     //
     // Emits a {NoteAdapterUpdated} event.
@@ -1077,6 +1096,8 @@ contract Vault is
             msg.sender,
             loan.collateralTokenId
         );
+
+        _asset.safeTransfer(msg.sender, liquidationFee);
 
         emit LoanLiquidated(noteToken, loanId);
     }
